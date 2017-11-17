@@ -104,17 +104,17 @@ shuffle = np.random.permutation((all_data.shape[0]))
 all_data = all_data[shuffle,:,:]
 all_labels = all_labels[shuffle,:,:]
 
-train_data = all_data[:500,:,:]
-eval_data = all_data[500:,:,:]
-train_labels = all_labels[:500,:,:]
-eval_labels = all_labels[500:,:,:]
+train_data = all_data[:200,:,:]
+eval_data = all_data[-10:,:,:]
+train_labels = all_labels[:200,:,:]
+eval_labels = all_labels[-10:,:,:]
 
 print (train_data.shape) # (540, 480, 480)
 print (train_labels.shape)
 
 batch_size = 1
 hm_epochs = 100
-lr = 0.01
+lr = 0.5
 
 x = tf.placeholder('float', [None, 480, 480])
 y = tf.placeholder('float', [None, 480, 480])
