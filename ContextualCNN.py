@@ -91,7 +91,7 @@ def train_neural_network(x):
 		print (output.shape)
 		# np.save('eval_output.npy',output)
 		pickle_out = open('eval_output_lr'+repr(lr)+'.pickle','wb')
-		pickle.dump(output,pickle_out)
+		pickle.dump(output,pickle_out,protocol=2)
 		pickle_out.close()
 
 
