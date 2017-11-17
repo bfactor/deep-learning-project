@@ -93,6 +93,7 @@ def train_neural_network(x):
 		pickle_out = open('eval_output_lr'+repr(lr)+'.pickle','wb')
 		pickle.dump(output,pickle_out,protocol=2)
 		pickle_out.close()
+		np.savetxt('eval_output_lr'+repr(lr)+'.txt',output)
 
 
 # load data
