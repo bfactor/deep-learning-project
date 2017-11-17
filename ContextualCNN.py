@@ -93,7 +93,7 @@ def train_neural_network(x):
 		pickle_out = open('eval_output_lr'+repr(lr)+'.pickle','wb')
 		pickle.dump(output,pickle_out,protocol=2)
 		pickle_out.close()
-		np.savetxt('eval_output_lr'+repr(lr)+'.txt',output)
+# 		np.savetxt('eval_output_lr'+repr(lr)+'.txt',output)
 
 
 # load data
@@ -130,7 +130,7 @@ eval_epoch_mse = []
 # keep_prob = tf.placeholder(tf.float32)
 
 train_neural_network(x)
-np.savez('loss_lr'+repr(lr)+'.npy',shuffle,train_epoch_loss,train_epoch_mse,eval_epoch_mse)
+np.savez('loss_lr'+repr(lr)+'.npz',shuffle,train_epoch_loss,train_epoch_mse,eval_epoch_mse)
 
 
 
