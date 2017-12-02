@@ -105,7 +105,7 @@ def train_neural_network(x):
 		output = sess.run(output, feed_dict={x: eval_data})
 		print (output.shape)
 		# np.save('eval_output.npy',output)
-		pickle_out = open('eval_output_earlyfuse_lr001.pickle','wb')
+		pickle_out = open('eval_output_earlyfuse_lr001_wd300.pickle','wb')
 		pickle.dump(output,pickle_out,protocol=2)
 		pickle_out.close()
 
@@ -146,7 +146,7 @@ eval_epoch_mse = []
 # keep_prob = tf.placeholder(tf.float32)
 
 train_neural_network(x)
-np.savez('loss_earlyfuse_lr001.npz',shuffle,train_epoch_loss,train_epoch_mse,eval_epoch_mse)
+np.savez('loss_earlyfuse_lr001_wd300.npz',shuffle,train_epoch_loss,train_epoch_mse,eval_epoch_mse)
 
 
 
