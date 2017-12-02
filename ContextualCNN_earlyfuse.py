@@ -74,8 +74,9 @@ def train_neural_network(x):
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
 		for epoch in range(hm_epochs):
-			lr_ = 1.0/np.power(10, epoch/100+2) # lr decay from 0.01 every 100 epochs 
-			cost_weight_ = max(1.0/np.power(10, epoch/100), 0.01) # cost_weight decay from 1 every 100 epochs until 0.01 
+# 			lr_ = 1.0/np.power(10, epoch/100+2) # lr decay from 0.01 every 100 epochs 
+			lr_ = 0.01
+			cost_weight_ = max(1.0/np.power(10, epoch/300), 0.01) # cost_weight decay from 1 every 300 epochs until 0.01 
 			print ('lr_:', lr_)
 			print ('cost_weight_:',cost_weight_)
 			epoch_loss = 0
@@ -104,7 +105,7 @@ def train_neural_network(x):
 		output = sess.run(output, feed_dict={x: eval_data})
 		print (output.shape)
 		# np.save('eval_output.npy',output)
-		pickle_out = open('eval_output_earlyfuse.pickle','wb')
+		pickle_out = open('eval_output_earlyfuse_lr001.pickle','wb')
 		pickle.dump(output,pickle_out,protocol=2)
 		pickle_out.close()
 
@@ -127,7 +128,7 @@ print (train_data.shape) # (540, 480, 480)
 print (train_labels.shape)
 
 batch_size = 1
-hm_epochs = 500
+hm_epochs = 1000
 
 
 x = tf.placeholder('float', [None, 480, 480])
@@ -145,7 +146,7 @@ eval_epoch_mse = []
 # keep_prob = tf.placeholder(tf.float32)
 
 train_neural_network(x)
-np.savez('loss_earlyfuse.npz',shuffle,train_epoch_loss,train_epoch_mse,eval_epoch_mse)
+np.savez('loss_earlyfuse_lr001.npz',shuffle,train_epoch_loss,train_epoch_mse,eval_epoch_mse)
 
 
 
