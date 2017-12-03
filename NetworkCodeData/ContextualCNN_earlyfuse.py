@@ -70,62 +70,83 @@ def train_neural_network(x):
 	cost = cost0 + cost_weight*(cost1 + cost2 + cost3 + cost4)
 	optimizer = tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(cost)
 
+	saver = tf.train.Saver()
+
 	print ("training starts")
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
 		for epoch in range(hm_epochs):
+			# shuffle = np.random.permutation(train_length)
+			# train_data = train_data[shuffle,:,:]
+			# train_labels = train_labels[shuffle,:,:]
+			# train_data = tf.train.shuffle_batch(train_data, seed = epoch)
+			# train_labels = tf.train.shuffle_batch(train_labels, seed = epoch)
+
 # 			lr_ = 1.0/np.power(10, epoch/100+2) # lr decay from 0.01 every 100 epochs 
 			lr_ = 0.01
 			cost_weight_ = max(1.0/np.power(10, epoch/300), 0.01) # cost_weight decay from 1 every 300 epochs until 0.01 
 			print ('lr_:', lr_)
 			print ('cost_weight_:',cost_weight_)
-			epoch_loss = 0
+
+			train_loss = 0
 			for i in range(int(len(train_data)/batch_size)):
 				epoch_x=train_data[i*batch_size:(i+1)*batch_size,:,:]
 				epoch_y=train_labels[i*batch_size:(i+1)*batch_size,:,:]
-
-				# print (epoch_x.shape)
-				# print (x.shape)
 				_, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y, lr:lr_, cost_weight: cost_weight_})
-				epoch_loss += c
-			print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-			train_epoch_loss.append(epoch_loss)
-			# evaluation on train and eval data by accuracy and mse
-			mse = tf.losses.mean_squared_error(onehot_labels,output)
-			# correct = tf.equal(tf.argmax(output, 1), tf.argmax(y, 1))
-			# accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
+				train_loss += c
+			train_loss = train_loss/train_length
+			eval_loss = sess.run(cost, feed_dict={x: eval_data, y: eval_labels, cost_weight: cost_weight_})
 
+			# cross_entropy_loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output)
+		
+			print('Epoch', epoch, 'completed out of',hm_epochs,'train loss:',train_loss, 'eval loss:', eval_loss)
+			train_epoch_loss.append(train_loss)
+			eval_epoch_loss.append(eval_loss)
+
+			# evaluation on train and eval data by mse
+			class_output = tf.argmax(output, -1)
+			mse = tf.losses.mean_squared_error(y,class_output)
 			train_mse = mse.eval({x:train_data[:10,:,:], y:train_labels[:10,:,:]})
 			eval_mse = mse.eval({x:eval_data, y:eval_labels})
+
 			train_epoch_mse.append(train_mse)
 			eval_epoch_mse.append(eval_mse)
-			print('eval mse:',eval_mse)
-			print('train mse:',train_mse)
+			print('eval mse: ',eval_mse,' train mse: ',train_mse)
 
-		output = sess.run(output, feed_dict={x: eval_data})
-		print (output.shape)
-		# np.save('eval_output.npy',output)
+		eval_output = sess.run(output, feed_dict={x: eval_data})
+
+		# test_loss.append(cross_entropy_loss.eval({x: test_data, y: test_labels}))
+		test_mse.append(mse.eval({x:test_data, y:test_labels}))
+		test_output = sess.run(output, feed_dict={x: test_data})
+		collection = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+
 		pickle_out = open('eval_output_earlyfuse_lr001_wd300.pickle','wb')
-		pickle.dump(output,pickle_out,protocol=2)
+		pickle.dump(eval_output,pickle_out,protocol=2)
 		pickle_out.close()
-
+		pickle_out = open('test_output_earlyfuse_lr001_wd300.pickle','wb')
+		pickle.dump(test_output,pickle_out,protocol=2)
+		pickle_out.close()
+		save_path = saver.save(sess, "/tmp/model_earlyfuse_lr001_wd300.ckpt")
+		
 
 # load data
-all_data = np.load('imgs_train_large.npy')
-all_labels = np.load('imgs_mask_train_large.npy')
-# test_data = np.load('imgs_test.npy')
+train_data = np.load('imgs_train_large.npy')
+train_labels = np.load('imgs_mask_train_large.npy')
 
-shuffle = np.random.permutation((all_data.shape[0]))
-all_data = all_data[shuffle,:,:]
-all_labels = all_labels[shuffle,:,:]
+train_length = train_data.shape[0]
 
-train_data = all_data[:300,:,:]
-eval_data = all_data[-10:,:,:]
-train_labels = all_labels[:300,:,:]
-eval_labels = all_labels[-10:,:,:]
+shuffle = np.random.permutation(train_length)
+train_data = train_data[shuffle,:,:]
+train_labels = train_labels[shuffle,:,:]
 
-print (train_data.shape) # (540, 480, 480)
-print (train_labels.shape)
+eval_data = np.load('imgs_eval.npy')
+eval_labels = np.load('imgs_mask_eval.npy')
+test_data = np.load('imgs_test.npy')
+test_labels = np.load('imgs_mask_test.npy')
+
+
+# print (all_data.shape) 
+# print (all_labels.shape)
 
 batch_size = 1
 hm_epochs = 1000
@@ -137,16 +158,19 @@ lr = tf.placeholder('float')
 cost_weight = tf.placeholder('float')
 
 train_epoch_loss = []
-train_epoch_accuracy = []
-eval_epoch_accuracy = []
+eval_epoch_loss = []
 train_epoch_mse = []
 eval_epoch_mse = []
-
+# test_loss = []
+test_mse = []
 # keep_rate = 0.8
 # keep_prob = tf.placeholder(tf.float32)
 
 train_neural_network(x)
-np.savez('loss_earlyfuse_lr001_wd300.npz',shuffle,train_epoch_loss,train_epoch_mse,eval_epoch_mse)
+np.savez('loss_earlyfuse_lr001_wd300.npz',train_epoch_loss=train_epoch_loss,eval_epoch_loss=eval_epoch_loss,train_epoch_mse=train_epoch_mse,eval_epoch_mse=eval_epoch_mse,test_mse=test_mse)
+
+
+
 
 
 
