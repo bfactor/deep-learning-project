@@ -3,23 +3,22 @@ import pickle
 import matplotlib.pyplot as plt
 import sys
 
-#lr = 0.5
-#npzfile = np.load('loss_lr'+repr(lr)+'.npz')
 
+# npzfile = np.load('loss_middlefuse_lr300_wd300.npz')
 npzfile = np.load(sys.argv[1])
 
-
-shuffle = npzfile['arr_0']
-train_epoch_loss = npzfile['arr_1']
-train_epoch_mse = npzfile['arr_2']
-eval_epoch_mse = npzfile['arr_3']
+train_epoch_loss = npzfile['train_epoch_loss']
+eval_epoch_loss = npzfile['eval_epoch_loss']
+train_epoch_mse = npzfile['train_epoch_mse']
+eval_epoch_mse = npzfile['eval_epoch_mse']
+test_mse = npzfile['test_mse']
 
 
 plt.figure(1)
 plt.plot(train_epoch_loss)
+plt.plot(eval_epoch_loss)
 plt.xlabel('epoch')
-plt.ylabel('train loss')
-#plt.show()
+plt.legend(['train loss','eval loss'])
 
 plt.figure(2)
 plt.plot(train_epoch_mse)
@@ -29,8 +28,4 @@ plt.legend(['train mse','eval mse'])
 
 plt.show()
 
-#--------------------------------------------
 
-#pickle_in = open('eval_output_lr'+repr(lr)+'.pickle','rb')
-#output = pickle.load(pickle_in)
-#pickle_in.close()
