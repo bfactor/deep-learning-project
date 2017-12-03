@@ -7,6 +7,12 @@ import sys
 #provide pickle file as  first argument
 #provide npz file as second argument
 
+# load eval and test data
+eval_data = np.load('imgs_eval.npy')
+eval_labels = np.load('imgs_mask_eval.npy')
+test_data = np.load('imgs_test.npy')
+test_labels = np.load('imgs_mask_test.npy')
+
 filename = sys.argv[1]
 
 pickle_out = pickle.load(open(filename,'rb'))
