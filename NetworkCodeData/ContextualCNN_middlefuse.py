@@ -47,7 +47,8 @@ def cnn_model_fn(x):
 	output4 = tf.layers.conv2d(inputs=conv14_2, filters=2, kernel_size=[1,1], padding="same", activation=tf.nn.relu,kernel_regularizer=regularizer)
 	
 	fuse = tf.add(tf.add(tf.add(output1,output2),output3),output4)
-	output = tf.nn.softmax(fuse, dim=0, name="softmax_tensor")
+	output = fuse
+	# output = tf.nn.softmax(fuse, dim=0, name="softmax_tensor")
 	# print ("output.shape")
 	# print (output.shape)  
 
@@ -59,6 +60,7 @@ def train_neural_network(x):
 
 	#cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=prediction) )
 	output1,output2,output3,output4,output = cnn_model_fn(x)
+	binary_output = tf.argmax(output, -1)
 	# cost_weights = tf.get_variable("cost_weights", [3, 1])
 	onehot_labels = tf.reshape(tf.one_hot(indices=tf.cast(y, tf.int32), depth=2),[-1, 480, 480, 2])
 	cost0 = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output)	
@@ -70,6 +72,9 @@ def train_neural_network(x):
 	# cost = cost0 + cost_sub + 0.0001* tf.nn.l2_loss(cost_weights)
 	cost = cost0 + cost_weight*(cost1 + cost2 + cost3 + cost4)
 	optimizer = tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(cost)
+	mse = tf.losses.mean_squared_error(y,binary_output)
+	
+	
 
 	saver = tf.train.Saver()
 
@@ -85,42 +90,39 @@ def train_neural_network(x):
 
 # 			lr_ = 1.0/np.power(10, epoch/100+2) # lr decay from 0.01 every 100 epochs 
 			lr_ = 0.01
-			cost_weight_ = max(1.0/np.power(10, epoch/300), 0.01) # cost_weight decay from 1 every 300 epochs until 0.01 
-			print ('lr_:', lr_)
-			print ('cost_weight_:',cost_weight_)
+			cost_weight_ = max(1.0/np.power(10, int(epoch/300)), 0.01) # cost_weight decay from 1 every 300 epochs until 0.01 
+			print ('lr_:', lr_, 'cost_weight_:',cost_weight_)
 
 			train_loss = 0
+			train_mse = 0
 			for i in range(int(len(train_data)/batch_size)):
 				epoch_x=train_data[i*batch_size:(i+1)*batch_size,:,:]
 				epoch_y=train_labels[i*batch_size:(i+1)*batch_size,:,:]
-				_, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y, lr:lr_, cost_weight: cost_weight_})
-				train_loss += c
+				_, c1, c2= sess.run([optimizer, cost, mse], feed_dict={x: epoch_x, y: epoch_y, lr:lr_, cost_weight: cost_weight_})
+				train_loss += c1
+				train_mse += c2
 			train_loss = train_loss/train_length
-			eval_loss = sess.run(cost, feed_dict={x: eval_data, y: eval_labels, cost_weight: cost_weight_})
+			train_mse = train_mse/train_length
 
-			# cross_entropy_loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output)
+			eval_loss,eval_mse = sess.run([cost,mse], feed_dict={x: eval_data, y: eval_labels, cost_weight: cost_weight_})
+
 		
 			print('Epoch', epoch, 'completed out of',hm_epochs,'train loss:',train_loss, 'eval loss:', eval_loss)
+			print('train mse: ',train_mse,'eval mse: ',eval_mse)
+
 			train_epoch_loss.append(train_loss)
 			eval_epoch_loss.append(eval_loss)
-
-			# evaluation on train and eval data by mse
-			class_output = tf.argmax(output, -1)
-			mse = tf.losses.mean_squared_error(y,class_output)
-			train_mse = mse.eval({x:train_data[:10,:,:], y:train_labels[:10,:,:]})
-			eval_mse = mse.eval({x:eval_data, y:eval_labels})
-
 			train_epoch_mse.append(train_mse)
 			eval_epoch_mse.append(eval_mse)
-			print('eval mse: ',eval_mse,' train mse: ',train_mse)
+			
 
-		eval_output = sess.run(output, feed_dict={x: eval_data})
-
+		
+		eval_output = sess.run(binary_output, feed_dict={x: eval_data})
+		test_output = sess.run(binary_output, feed_dict={x: test_data})
 		# test_loss.append(cross_entropy_loss.eval({x: test_data, y: test_labels}))
 		test_mse.append(mse.eval({x:test_data, y:test_labels}))
-		test_output = sess.run(output, feed_dict={x: test_data})
+		
 		collection = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-
 		pickle_out = open('eval_output_middlefuse_lr001_wd300.pickle','wb')
 		pickle.dump(eval_output,pickle_out,protocol=2)
 		pickle_out.close()
@@ -150,7 +152,7 @@ test_labels = np.load('imgs_mask_test.npy')
 # print (all_labels.shape)
 
 batch_size = 1
-hm_epochs = 1000
+hm_epochs = 50
 
 
 x = tf.placeholder('float', [None, 480, 480])
