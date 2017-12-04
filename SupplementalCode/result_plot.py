@@ -5,7 +5,7 @@ import sys
 
 
 # npzfile = np.load('loss_middlefuse_lr300_wd300.npz')
-npzfile = np.load(sys.argv[1])
+npzfile = np.load('..\\Newresults\\' + sys.argv[1])
 
 train_epoch_loss = npzfile['train_epoch_loss']
 eval_epoch_loss = npzfile['eval_epoch_loss']
