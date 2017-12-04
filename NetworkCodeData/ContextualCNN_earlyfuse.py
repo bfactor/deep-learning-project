@@ -46,7 +46,8 @@ def cnn_model_fn(x):
 	output4 = tf.layers.conv2d(inputs=conv14_2, filters=2, kernel_size=[1,1], padding="same", activation=tf.nn.relu,kernel_regularizer=regularizer)
 	
 	fuse = tf.add(tf.add(tf.add(output1,output2),output3),output4)
-	output = tf.nn.softmax(fuse, dim=0, name="softmax_tensor")
+	output = fuse
+	# output = tf.nn.softmax(fuse, dim=0, name="softmax_tensor")
 	# print ("output.shape")
 	# print (output.shape)  
 
