@@ -7,7 +7,7 @@ trainFilePrefix = './train/';
 labelSet = [];
 trainSet = [];
 
-for imgIdx = 1:20
+for imgIdx = sort([1:3:30 2:3:30])
    labelFilename = strcat(labelFilePrefix,num2str(imgIdx),'.tif'); 
    trainFilename = strcat(trainFilePrefix,num2str(imgIdx),'.tif');
    [labelSetNew,trainSetNew] = generateTrainingSet(labelFilename,trainFilename);

@@ -10,9 +10,10 @@ testLabelSet = zeros(5,480,480);
 testSet = zeros(5,480,480);
 
 crop_vec = [(512-480)/2 (512-480)/2 479 479];
+eval_test_vec = 3:3:30;
 
 for idx = 1:5
-    evalIdx = 20+idx;
+    evalIdx = eval_test_vec(((idx-1)*2)+1);
    
     evalLabelFilename = strcat(labelFilePrefix,num2str(evalIdx),'.tif'); 
     evalFilename = strcat(trainFilePrefix,num2str(evalIdx),'.tif');
@@ -24,7 +25,7 @@ for idx = 1:5
     evalSet(idx,:,:) = imcrop(evalImg,crop_vec);
    
     
-    testIdx = 25+idx;
+    testIdx = eval_test_vec(idx*2);
    
     testLabelFilename = strcat(labelFilePrefix,num2str(testIdx),'.tif'); 
     testFilename = strcat(trainFilePrefix,num2str(testIdx),'.tif');
