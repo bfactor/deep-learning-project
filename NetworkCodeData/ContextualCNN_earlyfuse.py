@@ -128,7 +128,7 @@ def train_neural_network(x):
 		pickle_out = open('test_output_earlyfuse_ep'+str(hm_epochs)+'_lr001_wd50.pickle','wb')
 		pickle.dump(test_output,pickle_out,protocol=2)
 		pickle_out.close()
-		save_path = saver.save(sess, '/tmp/model_earlyfuse_ep'+str(hm_epochs)+'_lr001_wd300.ckpt')
+		save_path = saver.save(sess, '/tmp/model_earlyfuse_ep'+str(hm_epochs)+'_lr001_wd50.ckpt')
 		
 
 # load data
