@@ -90,7 +90,7 @@ def train_neural_network(x):
 
 # 			lr_ = 1.0/np.power(10, epoch/100+2) # lr decay from 0.01 every 100 epochs 
 			lr_ = 0.01
-			cost_weight_ = max(1.0/np.power(10, int(epoch/300)), 0.01) # cost_weight decay from 1 every 300 epochs until 0.01 
+			cost_weight_ = max(1.0/np.power(10, int(epoch/50)), 0.01) # cost_weight decay from 1 every 300 epochs until 0.01 
 			print ('lr_:', lr_, 'cost_weight_:',cost_weight_)
 
 			train_loss = 0
