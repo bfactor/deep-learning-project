@@ -118,13 +118,13 @@ def train_neural_network(x):
 		test_mse.append(mse.eval({x:test_data, y:test_labels}))
 		
 		collection = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-		pickle_out = open('eval_output_lr001_wd300.pickle','wb')
+		pickle_out = open('eval_output_ep'+str(hm_epochs)+'_lr001_wd50.pickle','wb')
 		pickle.dump(eval_output,pickle_out,protocol=2)
 		pickle_out.close()
-		pickle_out = open('test_output_lr001_wd300.pickle','wb')
+		pickle_out = open('test_output_ep'+str(hm_epochs)+'_lr001_wd50.pickle','wb')
 		pickle.dump(test_output,pickle_out,protocol=2)
 		pickle_out.close()
-		save_path = saver.save(sess, "/tmp/model_lr001_wd300.ckpt")
+		save_path = saver.save(sess, "/tmp/model_ep"+str(hm_epochs)+"_lr001_wd50.ckpt")
 		
 
 # load data
@@ -165,7 +165,8 @@ test_mse = []
 # keep_prob = tf.placeholder(tf.float32)
 
 train_neural_network(x)
-np.savez('loss_lr001_wd300.npz',train_epoch_loss=train_epoch_loss,eval_epoch_loss=eval_epoch_loss,train_epoch_mse=train_epoch_mse,eval_epoch_mse=eval_epoch_mse,test_mse=test_mse)
+print('test mse: ', test_mse)
+np.savez('loss_ep'+str(hm_epochs)+'_lr001_wd50.npz',train_epoch_loss=train_epoch_loss,eval_epoch_loss=eval_epoch_loss,train_epoch_mse=train_epoch_mse,eval_epoch_mse=eval_epoch_mse,test_mse=test_mse)
 
 
 
