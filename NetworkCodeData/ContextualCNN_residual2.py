@@ -165,6 +165,7 @@ test_mse = []
 # keep_prob = tf.placeholder(tf.float32)
 
 train_neural_network(x)
+print('test mse: ', test_mse)
 np.savez("loss_residual2_"+str(hm_epochs)+"lr001_wd50.npz",train_epoch_loss=train_epoch_loss,eval_epoch_loss=eval_epoch_loss,train_epoch_mse=train_epoch_mse,eval_epoch_mse=eval_epoch_mse,test_mse=test_mse)
 
 
