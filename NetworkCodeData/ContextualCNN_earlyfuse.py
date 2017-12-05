@@ -22,7 +22,7 @@ def cnn_model_fn(x):
 
 	conv7 = tf.layers.conv2d(inputs=pool6, filters=256, kernel_size=[3, 3], padding="same", activation=tf.nn.relu,kernel_regularizer=regularizer)
 	conv8 = tf.layers.conv2d(inputs=conv7, filters=256, kernel_size=[3, 3], padding="same", activation=tf.nn.relu,kernel_regularizer=regularizer)
-	conv9 = tf.layers.conv2d(inputs=conv8, filters=256, kernel_size=[3, 3], padding="same", activation=tf.nn.relu)
+	conv9 = tf.layers.conv2d(inputs=conv8, filters=256, kernel_size=[3, 3], padding="same", activation=tf.nn.relu,kernel_regularizer=regularizer)
 	pool10 = tf.layers.max_pooling2d(inputs=conv9, pool_size=[2, 2], strides=2)
 
 	conv11 = tf.layers.conv2d(inputs=pool10, filters=512, kernel_size=[3, 3], padding="same", activation=tf.nn.relu,kernel_regularizer=regularizer)
