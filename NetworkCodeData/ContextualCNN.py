@@ -62,7 +62,7 @@ def train_neural_network(x):
 	cost1 = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output1)
 	cost2 = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output2)
 	cost3 = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output3)
-	cost4 = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output4)
+	# cost4 = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=output4)
 	# cost_sub = tf.reduce_sum(tf.multiply(tf.stack([cost1 , cost2 , cost3]), cost_weights))
 	# cost = cost0 + cost_sub + 0.0001* tf.nn.l2_loss(cost_weights)
 	cost = cost0 + cost_weight*(cost1 + cost2 + cost3 + cost4)
