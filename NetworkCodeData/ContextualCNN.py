@@ -66,7 +66,8 @@ def train_neural_network(x):
 	# cost_sub = tf.reduce_sum(tf.multiply(tf.stack([cost1 , cost2 , cost3]), cost_weights))
 	# cost = cost0 + cost_sub + 0.0001* tf.nn.l2_loss(cost_weights)
 	cost = cost0 + cost_weight*(cost1 + cost2 + cost3)
-	optimizer = tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(cost)
+	# optimizer = tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(cost)
+	optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
 	mse = tf.losses.mean_squared_error(y,binary_output)
 	
 	
