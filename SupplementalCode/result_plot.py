@@ -13,6 +13,9 @@ train_epoch_mse = npzfile['train_epoch_mse']
 eval_epoch_mse = npzfile['eval_epoch_mse']
 test_mse = npzfile['test_mse']
 
+print('Loss - Train: ' + str(train_epoch_loss[-1]) + ', Validation: ' + str(eval_epoch_loss[-1]) + 
+	'; MSE - Train: ' + str(train_epoch_mse[-1]) + ', Validation: ' + str(eval_epoch_mse[-1]) +
+	'; Test MSE: ' + str(test_mse[-1]))
 
 plt.figure(1)
 plt.plot(train_epoch_loss)
