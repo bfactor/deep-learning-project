@@ -158,7 +158,7 @@ test_labels = np.load('imgs_mask_test.npy')
 # print (all_labels.shape)
 
 batch_size = 1
-hm_epochs = 10
+hm_epochs = 300
 
 
 x = tf.placeholder('float', [None, 480, 480])
